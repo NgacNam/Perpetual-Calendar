@@ -362,8 +362,29 @@ void Check_btn(void){
 			if(Month > 12) Month = 1; 
 		}
 		else if(count == 3) { 
-			Date++;  
-			if(Date > 31) Date = 1; 
+			Date++;
+			if(Month == 4 || Month == 6  || Month == 9  || Month == 11)
+			{
+				if(Date > 30)
+				Date=1;
+			}
+			else if(Month == 1 || Month == 3  || Month == 5  || Month == 7 || Month == 8  || Month == 10  || Month == 12)
+			{
+				if(Date >31)
+				Date=1;
+			}
+			
+			else if(yyyy/4 == 0 && yyyy/400 == 0)
+			{
+				if(Date > 29)
+				Date=1;
+			}
+			else
+			{
+				if(Date > 28)
+				Date=1;
+			}
+			
 		}
 		else if(count == 4) {
 			 Hour++;  
