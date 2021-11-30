@@ -25,7 +25,7 @@
 #define save		3
 #define exit		4
 #define alarm		5
-#define SW			6
+#define SW		6
 #define BUZ_LED		7
 
 
