@@ -88,12 +88,12 @@ Date = 31, Month = 12, Year = 9, Mode = 0, AP = 1, A_Hour = 0, A_Minute = 0, tim
 // AP=1:PM, AP=0:AM
 
 unsigned char font[10]={0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8,0x80,0x90};		//ma hien thi led 7seg tu 0 -> 9
-volatile uint8_t tData[7], Time_count = 0;	//tData[7]: mang du lieu tam thoi
-char dis[5];	//dung cho h‡m printf de chuyen doi du lieu sang string va hien thi len LCD
+volatile uint8_t tData[7], Time_count = 0, blink=0;	//tData[7]: mang du lieu tam thoi
+char dis[5];	//dung cho h√†m printf de chuyen doi du lieu sang string va hien thi len LCD
 bool set = false;		//set = true: cho phep dieu chinh thoi gian
 bool set_alarm = false;
 bool EN_alarm = false;
-uint8_t count = 0;
+volatile count = 0;
 volatile char SW_time_date = 0;
 
 // chuyen doi nhi phan sang thap phan
@@ -213,45 +213,7 @@ void Display_7seg (void){
 		MAX7219_writeData(0x03,(Minute/10));
 		MAX7219_writeData(0x02,(Hour%10));
 		MAX7219_writeData(0x01,(Hour/10));
-		// 		PORT_7SEG = font[Month%10];
-		// 		CTRL_PORT |= (1 << month0);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << month0);
-		//
-		// 		PORT_7SEG = font[Month/10];
-		// 		CTRL_PORT |= (1 << month1);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << month1);
-		//
-		// 		PORT_7SEG = font[Date%10];
-		// 		CTRL_PORT |= (1 << date0);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << date0);
-		//
-		// 		PORT_7SEG = font[Date/10];
-		// 		CTRL_PORT |= (1 << date1);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << date1);
-		//
-		// 		PORT_7SEG = font[Minute%10];
-		// 		CTRL_PORT |= (1 << min0);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << min0);
-		//
-		// 		PORT_7SEG = font[Minute/10];
-		// 		CTRL_PORT |= (1 << min1);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << min1);
-		//
-		// 		PORT_7SEG = font[Hour%10];
-		// 		CTRL_PORT |= (1 << h0);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << h0);
-		//
-		// 		PORT_7SEG = font[Hour/10];
-		// 		CTRL_PORT |= (1 << h1);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << h1);
+		
 	}
 	/********display date -> DD:MM:YY***************/
 	else if (SW_time_date == 1)
@@ -267,38 +229,10 @@ void Display_7seg (void){
 		MAX7219_writeData(0x03,(Month/10));
 		MAX7219_writeData(0x02,(Date%10));
 		MAX7219_writeData(0x01,(Date/10));
-		// 		PORT_7SEG = font[(Year%1000)%10];
-		// 		CTRL_PORT |= (1 << month0);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << month0);
-		//
-		// 		PORT_7SEG = font[(Year%1000)/10];
-		// 		CTRL_PORT |= (1 << month1);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << month1);
-		//
-		// 		PORT_7SEG = font[Month%10];
-		// 		CTRL_PORT |= (1 << date0);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << date0);
-		//
-		// 		PORT_7SEG = font[Month/10];
-		// 		CTRL_PORT |= (1 << date1);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << date1);
-		//
-		// 		PORT_7SEG = font[Date%10];
-		// 		CTRL_PORT |= (1 << min0);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << min0);
-		//
-		// 		PORT_7SEG = font[Date/10];
-		// 		CTRL_PORT |= (1 << min1);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << min1);
+		
 	}
 	/********display AM LICH *********************/
-	else
+	else if (SW_time_date==2)
 	{
 		MAX7219_writeData(MAX7219_MODE_DECODE, 0xFF);
 		MAX7219_clearDisplay();
@@ -311,45 +245,17 @@ void Display_7seg (void){
 		MAX7219_writeData(0x03,(lunarMonth/10));
 		MAX7219_writeData(0x02,(lunarDate%10));
 		MAX7219_writeData(0x01,(lunarDate/10));
-		// 		PORT_7SEG = font[(lunarYear%1000)%10];
-		// 		CTRL_PORT |= (1 << month0);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << month0);
-		//
-		// 		PORT_7SEG = font[((lunarYear%1000)/10)%10];
-		// 		CTRL_PORT |= (1 << month1);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << month1);
-		//
-		// 		PORT_7SEG = font[((lunarYear%1000)/100)%10];
-		// 		CTRL_PORT |= (1 << date0);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << date0);
-		//
-		// 		PORT_7SEG = font[lunarYear/1000];
-		// 		CTRL_PORT |= (1 << date1);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << date1);
-		//
-		// 		PORT_7SEG = font[lunarMonth%10];
-		// 		CTRL_PORT |= (1 << min0);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << min0);
-		//
-		// 		PORT_7SEG = font[lunarMonth/10];
-		// 		CTRL_PORT |= (1 << min1);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << min1);
-		//
-		// 		PORT_7SEG = font[lunarDate%10];
-		// 		CTRL_PORT |= (1 << h0);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << h0);
-		//
-		// 		PORT_7SEG = font[lunarDate/10];
-		// 		CTRL_PORT |= (1 << h1);
-		// 		_delay_us(2000);
-		// 		CTRL_PORT &= ~(1 << h1);
+		
+	}
+	else
+	{
+		MAX7219_writeData(MAX7219_MODE_DECODE, 0xFF);
+		MAX7219_clearDisplay();
+		
+		MAX7219_writeData(0x04,(A_Minute%10));
+		MAX7219_writeData(0x03,(A_Minute/10));
+		MAX7219_writeData(0x02,(A_Hour%10));
+		MAX7219_writeData(0x01,(A_Hour/10));
 	}
 
 }
@@ -391,7 +297,7 @@ void Check_btn(void){
 			//while den khi tha nut nhan ra
 		}
 		SW_time_date++;
-		if(SW_time_date > 2) SW_time_date = 0;
+		if(SW_time_date > 3) SW_time_date = 0;
 	}
 // 	if ((BTN_PIN & (1 << SW)) == 0){
 // 		while((BTN_PIN & (1 << SW)) == 0){
@@ -419,21 +325,27 @@ void Check_btn(void){
 		Display();		
 		if(count == 1){
 			move_LCD(2,14);
+			SW_time_date=1;
 		}
 		else if(count == 2){
 			move_LCD(2,11);
+			SW_time_date=1;
 		}
 		else if(count == 3){
 			move_LCD(2,8);
+			SW_time_date=1;
 		}
 		else if(count == 4){
 			move_LCD(1,8);
+			SW_time_date=0;
 		}
 		else if(count == 5){
 			move_LCD(1,11);
+			SW_time_date=0;
 		}
 		else if(count == 6){
 			move_LCD(1,14);
+			SW_time_date=0;
 		}
 	}
 
@@ -504,9 +416,9 @@ void Check_btn(void){
 		}
 		count = 0; 
 		FixTime(); 
-		clr_LCD(); 
-		print_LCD("Saving......."); 
-		_delay_ms(500); 
+// 		clr_LCD(); 
+// 		print_LCD("Saving......."); 
+// 		_delay_ms(500); 
 		Display(); 
 		set = false; 
 	}
@@ -515,9 +427,9 @@ void Check_btn(void){
 		while((BTN_PIN & (1 << exit))== 0){		// while den khi tha nut nhan ra
 		}
 		count = 0;    
-		clr_LCD();  
-		print_LCD("Exit....."); 
-		_delay_ms(500); 
+// 		clr_LCD();  
+// 		print_LCD("Exit....."); 
+// 		_delay_ms(500); 
 		Display(); 
 		set = false;	
 	}
@@ -527,6 +439,7 @@ void Check_btn(void){
 
 		}
 		set_alarm = true;
+		SW_time_date=3;
 		count++;
 		if(count > 2) count = 1;
 		clr_LCD();
@@ -572,9 +485,9 @@ void Check_btn(void){
 		}
 		count = 0;
 		EN_alarm = true;
-		clr_LCD();
-		print_LCD("Saving.......");
-		_delay_ms(500);
+// 		clr_LCD();
+// 		print_LCD("Saving.......");
+// 		_delay_ms(500);
 		set_alarm = false;
 		Display();
 	}
@@ -583,9 +496,9 @@ void Check_btn(void){
 		}
 		count = 0;
 		EN_alarm = false;
-		clr_LCD();
-		print_LCD("Exit.....");
-		_delay_ms(500);
+// 		clr_LCD();
+// 		print_LCD("Exit.....");
+// 		_delay_ms(500);
 		set_alarm = false;
 		Display();
 	}
@@ -752,6 +665,8 @@ void MAX7219_clearDisplay()
 void Init_Timer0(void){
 	//Initialize Timer0 to 1s - overflow interrupt--------------------
     TCCR0=(1<<CS02)|(0<<CS01)|(1<<CS00);	//prescaler, clk/1024
+	/*TCCR1B=(1<<CS12)|(0<<CS11)|(1<<CS10);	//clk/1024*/
+	
     TIMSK=(1<<TOIE0);						
     sei();                      			
 	//----------------------------------------------------------------
@@ -798,10 +713,11 @@ int main(void){
 	Decode(); 	//BCD data converter function from DS1307 to DEC
 	Display(); 	//Print on LCD
 	_delay_ms(1);	
-	yyyy=Year+2000;
+	
 	//************************************************************************************
 	while(1){
 		Check_btn();
+		yyyy=Year+2000;
 		convertSolar2Lunar(Date, Month, yyyy, timeZone);	
 		Display_7seg();
 		if (Hour == A_Hour && Minute == A_Minute && EN_alarm == true)
@@ -818,6 +734,7 @@ char data[5];
 
 ISR(TIMER0_OVF_vect){ 	 
 	Time_count++;
+	blink++;
 	if(Time_count>=10){ 	//1s Exactly
 		                
 		if(set == false && set_alarm == false){
@@ -832,8 +749,92 @@ ISR(TIMER0_OVF_vect){
 				Display();
 				Display_7seg();
 			} 
-		}	
+		}
 		Time_count=0; 
+	}
+	if ((Time_count>5)&&(Time_count<10)&&(count==1))	//blink year
+	{
+		MAX7219_writeData(MAX7219_MODE_DECODE, 0xFF);
+		MAX7219_clearDisplay();
+		
+		MAX7219_writeData(0x08,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x07,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x06,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x05,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x04,(Month%10));
+		MAX7219_writeData(0x03,(Month/10));
+		MAX7219_writeData(0x02,(Date%10));
+		MAX7219_writeData(0x01,(Date/10));
+	}
+	if ((Time_count>5)&&(Time_count<10)&&(count==2))	//blink month
+	{
+		MAX7219_writeData(MAX7219_MODE_DECODE, 0xFF);
+		MAX7219_clearDisplay();
+		
+		MAX7219_writeData(0x08,((yyyy%1000)%10));
+		MAX7219_writeData(0x07,(((yyyy%1000)/10)%10));
+		MAX7219_writeData(0x06,(((yyyy%1000)/100)%10));
+		MAX7219_writeData(0x05,(yyyy/1000));
+		MAX7219_writeData(0x04,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x03,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x02,(Date%10));
+		MAX7219_writeData(0x01,(Date/10));
+	}
+	if ((Time_count>5)&&(Time_count<10)&&(count==3))	//blink date
+	{
+		MAX7219_writeData(MAX7219_MODE_DECODE, 0xFF);
+		MAX7219_clearDisplay();
+		
+		MAX7219_writeData(0x08,((yyyy%1000)%10));
+		MAX7219_writeData(0x07,(((yyyy%1000)/10)%10));
+		MAX7219_writeData(0x06,(((yyyy%1000)/100)%10));
+		MAX7219_writeData(0x05,(yyyy/1000));
+		MAX7219_writeData(0x04,(Month%10));
+		MAX7219_writeData(0x03,(Month/10));
+		MAX7219_writeData(0x02,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x01,MAX7219_CHAR_BLANK);
+	}
+	if ((Time_count>5)&&(Time_count<10)&&(count==4))	//blink sec
+	{
+		MAX7219_writeData(MAX7219_MODE_DECODE, 0xBF);
+		MAX7219_clearDisplay();
+		
+		MAX7219_writeData(0x08,Day);
+		MAX7219_writeData(0x07,0x0F);
+		MAX7219_writeData(0x06,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x05,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x04,(Minute%10));
+		MAX7219_writeData(0x03,(Minute/10));
+		MAX7219_writeData(0x02,(Hour%10));
+		MAX7219_writeData(0x01,(Hour/10));
+	}
+	if ((Time_count>5)&&(Time_count<10)&&(count==5))	//blink min
+	{
+		MAX7219_writeData(MAX7219_MODE_DECODE, 0xBF);
+		MAX7219_clearDisplay();
+		
+		MAX7219_writeData(0x08,Day);
+		MAX7219_writeData(0x07,0x0F);
+		MAX7219_writeData(0x06,(Second%10));
+		MAX7219_writeData(0x05,(Second/10));
+		MAX7219_writeData(0x04,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x03,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x02,(Hour%10));
+		MAX7219_writeData(0x01,(Hour/10));
+	}
+	if ((Time_count>5)&&(Time_count<10)&&(count==6))	//blink hour
+	{
+		MAX7219_writeData(MAX7219_MODE_DECODE, 0xBF);
+		MAX7219_clearDisplay();
+		
+		MAX7219_writeData(0x08,Day);
+		MAX7219_writeData(0x07,0x0F);
+		MAX7219_writeData(0x06,(Second%10));
+		MAX7219_writeData(0x05,(Second/10));
+		MAX7219_writeData(0x04,(Minute%10));
+		MAX7219_writeData(0x03,(Minute/10));
+		MAX7219_writeData(0x02,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x01,MAX7219_CHAR_BLANK);
 	}
 }
 
