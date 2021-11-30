@@ -25,7 +25,7 @@
 #define save		3
 #define exit		4
 #define alarm		5
-#define SW		6
+#define SW			6
 #define BUZ_LED		7
 
 
@@ -794,19 +794,19 @@ ISR(TIMER0_OVF_vect){
 		MAX7219_writeData(0x02,MAX7219_CHAR_BLANK);
 		MAX7219_writeData(0x01,MAX7219_CHAR_BLANK);
 	}
-	if ((Time_count>5)&&(Time_count<10)&&(count==4))	//blink sec
+	if ((Time_count>5)&&(Time_count<10)&&(count==4))	//blink hour
 	{
 		MAX7219_writeData(MAX7219_MODE_DECODE, 0xBF);
 		MAX7219_clearDisplay();
 		
 		MAX7219_writeData(0x08,Day);
 		MAX7219_writeData(0x07,0x0F);
-		MAX7219_writeData(0x06,MAX7219_CHAR_BLANK);
-		MAX7219_writeData(0x05,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x06,(Second%10));
+		MAX7219_writeData(0x05,(Second/10));
 		MAX7219_writeData(0x04,(Minute%10));
 		MAX7219_writeData(0x03,(Minute/10));
-		MAX7219_writeData(0x02,(Hour%10));
-		MAX7219_writeData(0x01,(Hour/10));
+		MAX7219_writeData(0x02,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x01,MAX7219_CHAR_BLANK);
 	}
 	if ((Time_count>5)&&(Time_count<10)&&(count==5))	//blink min
 	{
@@ -822,19 +822,19 @@ ISR(TIMER0_OVF_vect){
 		MAX7219_writeData(0x02,(Hour%10));
 		MAX7219_writeData(0x01,(Hour/10));
 	}
-	if ((Time_count>5)&&(Time_count<10)&&(count==6))	//blink hour
+	if ((Time_count>5)&&(Time_count<10)&&(count==6))	//blink sec
 	{
 		MAX7219_writeData(MAX7219_MODE_DECODE, 0xBF);
 		MAX7219_clearDisplay();
 		
 		MAX7219_writeData(0x08,Day);
 		MAX7219_writeData(0x07,0x0F);
-		MAX7219_writeData(0x06,(Second%10));
-		MAX7219_writeData(0x05,(Second/10));
+		MAX7219_writeData(0x06,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x05,MAX7219_CHAR_BLANK);
 		MAX7219_writeData(0x04,(Minute%10));
 		MAX7219_writeData(0x03,(Minute/10));
-		MAX7219_writeData(0x02,MAX7219_CHAR_BLANK);
-		MAX7219_writeData(0x01,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x02,(Hour%10));
+		MAX7219_writeData(0x01,(Hour/10));
 	}
 }
 
