@@ -59,19 +59,7 @@
 #define MAX7219_CHAR_BLANK        0xF
 #define MAX7219_CHAR_NEGATIVE     0xA
 
-//	dinh nghia chan du lieu hien thi 7seg led
-// #define DDR_7SEG	DDRD
-// #define PORT_7SEG	PORTD
 
-//  dinh nghia chan dieu khien 7seg led
-// #define CTRL_DDR	DDRC
-// #define CTRL_PORT	PORTC
-// #define	sec_year0		2
-// #define	sec_year1		3
-// #define	min_month0		4
-// #define min_month1		5
-// #define	h_date0			6
-// #define	h_date1			7
 
 
 //--------------------------------------------------------------------------------------
@@ -79,7 +67,8 @@
 // dinh nghia cac bien thoi gian
 /*signed char Second = 59, Minute = 50, Hour = 11;*/
 volatile int16_t Second = 59, Minute = 50, Hour = 11, Day = 7, 
-Date = 31, Month = 12, Year = 9, Mode = 0, AP = 1, A_Hour = 0, A_Minute = 0, timeZone = 7, lunarDate, lunarMonth, lunarYear, yyyy;
+Date = 31, Month = 12, Year = 9, Mode = 0, AP = 1, A_Hour = 0, A_Minute = 0, 
+timeZone = 7, lunarDate, lunarMonth, lunarYear, yyyy;
 
 //Su dung bien dong (volatile) de tro thanh bien tuy chon
 //Mode: chon che do 12h hoac 24h, Mode nam o bit 6 cua thanh ghi HOURS
@@ -88,12 +77,13 @@ Date = 31, Month = 12, Year = 9, Mode = 0, AP = 1, A_Hour = 0, A_Minute = 0, tim
 // AP=1:PM, AP=0:AM
 
 unsigned char font[10]={0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8,0x80,0x90};		//ma hien thi led 7seg tu 0 -> 9
-volatile uint8_t tData[7], Time_count = 0, blink=0;	//tData[7]: mang du lieu tam thoi
+volatile uint8_t tData[7];	//tData[7]: mang du lieu tam thoi
+volatile uint16_t Time_count = 0;
 char dis[5];	//dung cho hàm printf de chuyen doi du lieu sang string va hien thi len LCD
 bool set = false;		//set = true: cho phep dieu chinh thoi gian
 bool set_alarm = false;
 bool EN_alarm = false;
-volatile count = 0;
+volatile uint8_t count = 0;
 volatile char SW_time_date = 0;
 
 // chuyen doi nhi phan sang thap phan
@@ -202,11 +192,10 @@ void Display_7seg (void){
 	
 	if (SW_time_date == 0)
 	{
-		MAX7219_writeData(MAX7219_MODE_DECODE, 0xBF);
 		MAX7219_clearDisplay();
 		
-		MAX7219_writeData(0x08,Day);
-		MAX7219_writeData(0x07,0x0F);
+		MAX7219_writeData(0x08,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x07,MAX7219_CHAR_BLANK);
 		MAX7219_writeData(0x06,(Second%10));
 		MAX7219_writeData(0x05,(Second/10));
 		MAX7219_writeData(0x04,(Minute%10));
@@ -218,7 +207,6 @@ void Display_7seg (void){
 	/********display date -> DD:MM:YY***************/
 	else if (SW_time_date == 1)
 	{
-		MAX7219_writeData(MAX7219_MODE_DECODE, 0xFF);
 		MAX7219_clearDisplay();
 		
 		MAX7219_writeData(0x08,((yyyy%1000)%10));
@@ -234,7 +222,6 @@ void Display_7seg (void){
 	/********display AM LICH *********************/
 	else if (SW_time_date==2)
 	{
-		MAX7219_writeData(MAX7219_MODE_DECODE, 0xFF);
 		MAX7219_clearDisplay();
 		
 		MAX7219_writeData(0x08,((lunarYear%1000)%10));
@@ -249,7 +236,6 @@ void Display_7seg (void){
 	}
 	else
 	{
-		MAX7219_writeData(MAX7219_MODE_DECODE, 0xFF);
 		MAX7219_clearDisplay();
 		
 		MAX7219_writeData(0x04,(A_Minute%10));
@@ -415,7 +401,27 @@ void Check_btn(void){
 		}
 		else if(count == 3) { 
 			Date--;  
-			if(Date < 1 )  Date = 31 ; 
+			if(Month == 4 || Month == 6  || Month == 9  || Month == 11)
+			{
+				if(Date <1)
+				Date=30;
+			}
+			else if(Month == 1 || Month == 3  || Month == 5  || Month == 7 || Month == 8  || Month == 10  || Month == 12)
+			{
+				if(Date <1)
+				Date=31;
+			}
+			
+			else if(yyyy/4 == 0 && yyyy/400 == 0)
+			{
+				if(Date <1)
+				Date=29;
+			}
+			else
+			{
+				if(Date <1)
+				Date=28;
+			}
 		}
 		else if(count == 4) {
 			 Hour--;  
@@ -686,7 +692,6 @@ void MAX7219_clearDisplay()
 void Init_Timer0(void){
 	//Initialize Timer0 to 1s - overflow interrupt--------------------
     TCCR0=(1<<CS02)|(0<<CS01)|(1<<CS00);	//prescaler, clk/1024
-	/*TCCR1B=(1<<CS12)|(0<<CS11)|(1<<CS10);	//clk/1024*/
 	
     TIMSK=(1<<TOIE0);						
     sei();                      			
@@ -704,7 +709,7 @@ int main(void){
 	SPCR |= (1 << SPE) | (1 << MSTR)| (1<<SPR1);
 
 	// Decode mode to "Font Code-B"
-	/*MAX7219_writeData(MAX7219_MODE_DECODE, 0xFF);*/
+	MAX7219_writeData(MAX7219_MODE_DECODE, 0xFF);
 
 	// Scan limit runs from 0.
 	MAX7219_writeData(MAX7219_MODE_SCAN_LIMIT, 0x07);
@@ -753,9 +758,8 @@ int main(void){
 
 char data[5];
 
-ISR(TIMER0_OVF_vect){ 	 
+ISR(TIMER0_OVF_vect){ 	
 	Time_count++;
-	blink++;
 	if(Time_count>=10){ 	//1s Exactly
 		                
 		if(set == false && set_alarm == false){
@@ -817,11 +821,11 @@ ISR(TIMER0_OVF_vect){
 	}
 	if ((Time_count>5)&&(Time_count<10)&&(count==4))	//blink hour
 	{
-		MAX7219_writeData(MAX7219_MODE_DECODE, 0xBF);
+		MAX7219_writeData(MAX7219_MODE_DECODE, 0xFF);
 		MAX7219_clearDisplay();
 		
-		MAX7219_writeData(0x08,Day);
-		MAX7219_writeData(0x07,0x0F);
+		MAX7219_writeData(0x08,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x07,MAX7219_CHAR_BLANK);
 		MAX7219_writeData(0x06,(Second%10));
 		MAX7219_writeData(0x05,(Second/10));
 		MAX7219_writeData(0x04,(Minute%10));
@@ -831,11 +835,11 @@ ISR(TIMER0_OVF_vect){
 	}
 	if ((Time_count>5)&&(Time_count<10)&&(count==5))	//blink min
 	{
-		MAX7219_writeData(MAX7219_MODE_DECODE, 0xBF);
+		MAX7219_writeData(MAX7219_MODE_DECODE, 0xFF);
 		MAX7219_clearDisplay();
 		
-		MAX7219_writeData(0x08,Day);
-		MAX7219_writeData(0x07,0x0F);
+		MAX7219_writeData(0x08,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x07,MAX7219_CHAR_BLANK);
 		MAX7219_writeData(0x06,(Second%10));
 		MAX7219_writeData(0x05,(Second/10));
 		MAX7219_writeData(0x04,MAX7219_CHAR_BLANK);
@@ -845,11 +849,11 @@ ISR(TIMER0_OVF_vect){
 	}
 	if ((Time_count>5)&&(Time_count<10)&&(count==6))	//blink sec
 	{
-		MAX7219_writeData(MAX7219_MODE_DECODE, 0xBF);
+		MAX7219_writeData(MAX7219_MODE_DECODE, 0xFF);
 		MAX7219_clearDisplay();
 		
-		MAX7219_writeData(0x08,Day);
-		MAX7219_writeData(0x07,0x0F);
+		MAX7219_writeData(0x08,MAX7219_CHAR_BLANK);
+		MAX7219_writeData(0x07,MAX7219_CHAR_BLANK);
 		MAX7219_writeData(0x06,MAX7219_CHAR_BLANK);
 		MAX7219_writeData(0x05,MAX7219_CHAR_BLANK);
 		MAX7219_writeData(0x04,(Minute%10));
