@@ -67,7 +67,7 @@
 // dinh nghia cac bien thoi gian
 /*signed char Second = 59, Minute = 50, Hour = 11;*/
 volatile int16_t Second = 59, Minute = 50, Hour = 11, Day = 7, 
-Date = 31, Month = 12, Year = 9, Mode = 0, AP = 1, A_Hour = 0, A_Minute = 0, 
+Date = 4, Month = 12, Year = 21, Mode = 0, AP = 1, A_Hour = 0, A_Minute = 0, 
 timeZone = 7, lunarDate, lunarMonth, lunarYear, yyyy;
 
 //Su dung bien dong (volatile) de tro thanh bien tuy chon
