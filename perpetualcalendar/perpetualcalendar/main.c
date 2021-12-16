@@ -387,7 +387,7 @@ int main(void){
 	SPCR |= (1 << SPE) | (1 << MSTR)| (1<<SPR1);
 
 	// Decode mode to "Font Code-B"
-	MAX7219_writeData(MAX7219_MODE_DECODE, 0xFF);
+	/*MAX7219_writeData(MAX7219_MODE_DECODE, 0xFF);*/
 
 	// Scan limit runs from 0.
 	MAX7219_writeData(MAX7219_MODE_SCAN_LIMIT, 0x07);
