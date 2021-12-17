@@ -200,7 +200,8 @@ void Init_btn(void){
 	BTN_DDRD  &= ~((1<<SW)|(1<<ADJ));		// set input cho button setting
 	BTN_DDRD = (1<<BUZ_LED);																// set output cho buzzer + led
 	BTN_PORTD = (1<<SW)|(1<<ADJ);	// set dien tro keo len cho button setting
-
+	BTN_DDRB &= ~(1<<INCR);
+	BTN_PORTB = (1<<INCR);
 }
 
 
