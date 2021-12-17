@@ -1,8 +1,10 @@
 /*
- * lichult.c
+ * lich van nien
  *
  * Created: 12/9/2021 5:47:03 PM
- * Author : NgacNam
+ * Author : Vo Tan Minh Khoi
+			Ngac Bao Nam
+			Phung Thi Huong
  */ 
 
 
@@ -76,7 +78,7 @@ timeZone = 7, lunarDate, lunarMonth, lunarYear, yyyy;
 //AP:bien chi AM hay PM trong mode 12h, AP nam o bit thu 5 c?a thanh ghi HOURS
 // AP=1:PM, AP=0:AM
 
-unsigned char font[10]={0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8,0x80,0x90};		//ma hien thi led 7seg tu 0 -> 9
+
 volatile uint8_t tData[7];	//tData[7]: mang du lieu tam thoi
 volatile uint16_t Time_count = 0;
 bool set = false;		//set = true: cho phep dieu chinh thoi gian
