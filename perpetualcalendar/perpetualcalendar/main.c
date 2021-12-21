@@ -371,14 +371,14 @@ void Init_Timer0(void){
 	//----------------------------------------------------------------
 }
 
-void Init_Timer2(void){
-	//Initialize Timer2 to 1s - overflow interrupt--------------------
-	TCCR2=(1<<CS22)|(0<<CS21)|(1<<CS20);	//prescaler, clk/1024
-	
-	TIMSK=(1<<TOIE2);
-	sei();
-	//----------------------------------------------------------------
-}
+// void Init_Timer2(void){
+// 	//Initialize Timer2 to 1s - overflow interrupt--------------------
+// 	TCCR2=(1<<CS22)|(0<<CS21)|(1<<CS20);	//prescaler, clk/1024
+// 	
+// 	TIMSK=(1<<TOIE2);
+// 	sei();
+// 	//----------------------------------------------------------------
+// }
 
 void Init_interupt(void){
 	MCUCR=(0<<ISC11)|(0<<ISC10)|(0<<ISC01)|(0<<ISC00);
@@ -410,7 +410,7 @@ int main(void){
 	
 	//------------------------------------
 	Init_Timer0();
-	Init_Timer2();
+	//Init_Timer2();
 	
 	Init_interupt();
 	
@@ -442,6 +442,7 @@ char data[5];
 
 ISR(TIMER0_OVF_vect){ 	
 	Time_count++;
+	blink_count++;
 	if(Time_count>=10){ 	//1s Exactly
 		                
 		if(set == false ){
@@ -458,15 +459,10 @@ ISR(TIMER0_OVF_vect){
 		}
 		Time_count=0; 
 	}
-}
-
-ISR(TIMER2_OVF_vect){
-	blink_count++;
 	if (blink_count>=30)	//blink 500ms
 	{
 		if ((blink_count>15)&&(count==1)&&(SW_time_date==0))	//blink hour
 		{
-			MAX7219_writeData(MAX7219_MODE_DECODE,0xFF);
 			MAX7219_clearDisplay();
 			
 			MAX7219_writeData(MAX7219_DIGIT7,(Minute%10));
@@ -480,7 +476,6 @@ ISR(TIMER2_OVF_vect){
 		}
 		if ((blink_count>15)&&(count==2)&&(SW_time_date==0))	//blink min
 		{
-			
 			MAX7219_clearDisplay();
 			
 			MAX7219_writeData(MAX7219_DIGIT7,MAX7219_CHAR_BLANK);
@@ -492,7 +487,7 @@ ISR(TIMER2_OVF_vect){
 			MAX7219_writeData(MAX7219_DIGIT1,(Date%10));
 			MAX7219_writeData(MAX7219_DIGIT0,(Date/10));
 		}
-		// 	if ((blink_count>30)&&(count==3)&&(SW_time_date==0))	//blink sec
+		// 	if ((blink_count>15)&&(count==3)&&(SW_time_date==0))	//blink sec
 		// 	{
 		// 		MAX7219_writeData(MAX7219_MODE_DECODE, 0xFF);
 		// 		MAX7219_clearDisplay();
@@ -506,7 +501,7 @@ ISR(TIMER2_OVF_vect){
 		// 		MAX7219_writeData(MAX7219_DIGIT1,(Hour%10));
 		// 		MAX7219_writeData(MAX7219_DIGIT0,(Hour/10));
 		// 	}
-		if ((blink_count>30)&&(count==1)&&(SW_time_date==1))	//blink date
+		if ((blink_count>15)&&(count==1)&&(SW_time_date==1))	//blink date
 		{
 			
 			MAX7219_clearDisplay();
@@ -520,7 +515,7 @@ ISR(TIMER2_OVF_vect){
 			MAX7219_writeData(MAX7219_DIGIT1,MAX7219_CHAR_BLANK);
 			MAX7219_writeData(MAX7219_DIGIT0,MAX7219_CHAR_BLANK);
 		}
-		if ((blink_count>30)&&(count==2)&&(SW_time_date==1))	//blink month
+		if ((blink_count>15)&&(count==2)&&(SW_time_date==1))	//blink month
 		{
 			
 			MAX7219_clearDisplay();
@@ -534,7 +529,7 @@ ISR(TIMER2_OVF_vect){
 			MAX7219_writeData(MAX7219_DIGIT1,(Date%10));
 			MAX7219_writeData(MAX7219_DIGIT0,(Date/10));
 		}
-		if ((blink_count>30)&&(count==3)&&(SW_time_date==1))	//blink year
+		if ((blink_count>15)&&(count==3)&&(SW_time_date==1))	//blink year
 		{
 			
 			MAX7219_clearDisplay();
@@ -548,7 +543,7 @@ ISR(TIMER2_OVF_vect){
 			MAX7219_writeData(MAX7219_DIGIT1,(Date%10));
 			MAX7219_writeData(MAX7219_DIGIT0,(Date/10));
 		}
-		if ((blink_count>30)&&(count==1)&&(SW_time_date==3))	//blink A_HOUR
+		if ((blink_count>15)&&(count==1)&&(SW_time_date==3))	//blink A_HOUR
 		{
 			
 			MAX7219_clearDisplay();
@@ -559,7 +554,7 @@ ISR(TIMER2_OVF_vect){
 			MAX7219_writeData(MAX7219_DIGIT4,MAX7219_CHAR_BLANK);
 
 		}
-		if ((blink_count>30)&&(count==2)&&(SW_time_date==3))	//blink A_MIN
+		if ((blink_count>15)&&(count==2)&&(SW_time_date==3))	//blink A_MIN
 		{
 			
 			MAX7219_clearDisplay();
@@ -572,6 +567,10 @@ ISR(TIMER2_OVF_vect){
 		blink_count=0;
 	}
 }
+
+// ISR(TIMER2_OVF_vect){
+// 	
+// }
 
 //SW mode button
 ISR(INT0_vect){
