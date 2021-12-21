@@ -461,7 +461,33 @@ ISR(TIMER0_OVF_vect){
 	}
 	if (blink_count>=30)	//blink 500ms
 	{
-		if ((blink_count>15)&&(count==1)&&(SW_time_date==0))	//blink hour
+		if ((blink_count>15)&&(count==1)&&(SW_time_date==0))	//blink date
+		{
+			MAX7219_clearDisplay();
+			
+			MAX7219_writeData(MAX7219_DIGIT7,(Minute%10));
+			MAX7219_writeData(MAX7219_DIGIT6,(Minute/10));
+			MAX7219_writeData(MAX7219_DIGIT5,(Hour%10));
+			MAX7219_writeData(MAX7219_DIGIT4,(Hour/10));
+			MAX7219_writeData(MAX7219_DIGIT3,(Month%10));
+			MAX7219_writeData(MAX7219_DIGIT2,(Month/10));
+			MAX7219_writeData(MAX7219_DIGIT1,MAX7219_CHAR_BLANK);
+			MAX7219_writeData(MAX7219_DIGIT0,MAX7219_CHAR_BLANK);
+		}
+		if ((blink_count>15)&&(count==2)&&(SW_time_date==0))	//blink month
+		{
+			MAX7219_clearDisplay();
+			
+			MAX7219_writeData(MAX7219_DIGIT7,(Minute%10));
+			MAX7219_writeData(MAX7219_DIGIT6,(Minute/10));
+			MAX7219_writeData(MAX7219_DIGIT5,(Hour%10));
+			MAX7219_writeData(MAX7219_DIGIT4,(Hour/10));
+			MAX7219_writeData(MAX7219_DIGIT3,MAX7219_CHAR_BLANK);
+			MAX7219_writeData(MAX7219_DIGIT2,MAX7219_CHAR_BLANK);
+			MAX7219_writeData(MAX7219_DIGIT1,(Date%10));
+			MAX7219_writeData(MAX7219_DIGIT0,(Date/10));
+		}
+		if ((blink_count>15)&&(count==3)&&(SW_time_date==0))	//blink hour
 		{
 			MAX7219_clearDisplay();
 			
@@ -474,7 +500,7 @@ ISR(TIMER0_OVF_vect){
 			MAX7219_writeData(MAX7219_DIGIT1,(Date%10));
 			MAX7219_writeData(MAX7219_DIGIT0,(Date/10));
 		}
-		if ((blink_count>15)&&(count==2)&&(SW_time_date==0))	//blink min
+		if ((blink_count>15)&&(count==4)&&(SW_time_date==0))	//blink min
 		{
 			MAX7219_clearDisplay();
 			
@@ -487,20 +513,6 @@ ISR(TIMER0_OVF_vect){
 			MAX7219_writeData(MAX7219_DIGIT1,(Date%10));
 			MAX7219_writeData(MAX7219_DIGIT0,(Date/10));
 		}
-		// 	if ((blink_count>15)&&(count==3)&&(SW_time_date==0))	//blink sec
-		// 	{
-		// 		MAX7219_writeData(MAX7219_MODE_DECODE, 0xFF);
-		// 		MAX7219_clearDisplay();
-		//
-		// 		MAX7219_writeData(MAX7219_DIGIT7,MAX7219_CHAR_BLANK);
-		// 		MAX7219_writeData(MAX7219_DIGIT6,MAX7219_CHAR_BLANK);
-		// 		MAX7219_writeData(MAX7219_DIGIT5,MAX7219_CHAR_BLANK);
-		// 		MAX7219_writeData(MAX7219_DIGIT4,MAX7219_CHAR_BLANK);
-		// 		MAX7219_writeData(MAX7219_DIGIT3,(Minute%10));
-		// 		MAX7219_writeData(MAX7219_DIGIT2,(Minute/10));
-		// 		MAX7219_writeData(MAX7219_DIGIT1,(Hour%10));
-		// 		MAX7219_writeData(MAX7219_DIGIT0,(Hour/10));
-		// 	}
 		if ((blink_count>15)&&(count==1)&&(SW_time_date==1))	//blink date
 		{
 			
@@ -609,7 +621,7 @@ ISR(INT1_vect){
 	count++;
 	if (SW_time_date==0)
 	{
-		if(count > 2) {
+		if(count > 4) {
 			count = 0;
 			set=false;
 		}
@@ -638,19 +650,43 @@ ISR(INT2_vect){
 		EN_alarm=false;
 		BTN_PORTD = (0<<BUZ_LED);
 	}
-	if((set == true) && (SW_time_date==0)){		//icrease hh, mm, ss
+	if((set == true) && (SW_time_date==0)){		//icrease dd, mm, h, min
 		if(count == 1) {
+			Date++;
+			if(Month == 4 || Month == 6  || Month == 9  || Month == 11)
+			{
+				if(Date > 30)
+				Date=1;
+			}
+			else if(Month == 1 || Month == 3  || Month == 5  || Month == 7 || Month == 8  || Month == 10  || Month == 12)
+			{
+				if(Date >31)
+				Date=1;
+			}
+			
+			else if(yyyy/4 == 0 && yyyy/400 == 0)
+			{
+				if(Date > 29)
+				Date=1;
+			}
+			else
+			{
+				if(Date > 28)
+				Date=1;
+			}
+		}
+		else if(count == 2) {
+			Month++;
+			if(Month > 12) Month = 1;
+		}
+		else if(count == 3) {
 			Hour++;
 			if(Hour > 23) Hour = 0;
 		}
-		else if(count == 2) {
+		else if(count == 4) {
 			Minute++;
 			if(Minute > 59) Minute = 0;
 		}
-// 		else if(count == 3) {
-// 			Second++;
-// 			if(Second > 59) Second = 0;
-// 		}
 	}
 	
 	if((set == true) && (SW_time_date==1)){		//increase dd, mm, yyyy
