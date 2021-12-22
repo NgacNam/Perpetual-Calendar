@@ -617,10 +617,10 @@ ISR(INT0_vect){
 //Set time button
 ISR(INT1_vect){
 
-	set = true;
-	count++;
 	if (SW_time_date==0)
 	{
+		set = true;
+		count++;
 		if(count > 4) {
 			count = 0;
 			set=false;
@@ -628,6 +628,8 @@ ISR(INT1_vect){
 	}
 	if (SW_time_date==1)
 	{
+		set = true;
+		count++;
 		if(count > 3) {
 			count = 0;
 			set=false;
@@ -635,8 +637,12 @@ ISR(INT1_vect){
 	}
 	if (SW_time_date==3)
 	{
+		set = true;
+		count++;
 		if(count > 2) {
 			count = 0;
+			A_Hour=0;
+			A_Minute=0;
 			EN_alarm=false;
 			set=false;
 		}
